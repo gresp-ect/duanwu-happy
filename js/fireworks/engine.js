@@ -143,32 +143,43 @@ function playTypeClick() {
 	const ctx = soundManager.ctx;
 	const now = ctx.currentTime;
 
-	// 白噪音源
-	const noise = ctx.createBufferSource();
-	noise.buffer = getNoiseBuffer(ctx);
+	// 第一层：尖锐的 click 声（模拟轴体触发声）
+	const click = ctx.createBufferSource();
+	click.buffer = getNoiseBuffer(ctx);
 
-	// 带通滤波 → 敲击质感
-	const bandpass = ctx.createBiquadFilter();
-	bandpass.type = "bandpass";
-	bandpass.frequency.value = 2500 + Math.random() * 1500;
-	bandpass.Q.value = 1.5;
+	const clickBPF = ctx.createBiquadFilter();
+	clickBPF.type = "bandpass";
+	clickBPF.frequency.value = 4000 + Math.random() * 1000;
+	clickBPF.Q.value = 3;
 
-	// 高通滤波 → 去掉低频闷声
-	const highpass = ctx.createBiquadFilter();
-	highpass.type = "highpass";
-	highpass.frequency.value = 800;
+	const clickGain = ctx.createGain();
+	clickGain.gain.setValueAtTime(0.18, now);
+	clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
 
-	// 包络
-	const gain = ctx.createGain();
-	gain.gain.setValueAtTime(0.15, now);
-	gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+	click.connect(clickBPF);
+	clickBPF.connect(clickGain);
+	clickGain.connect(ctx.destination);
+	click.start(now);
+	click.stop(now + 0.02);
 
-	noise.connect(bandpass);
-	bandpass.connect(highpass);
-	highpass.connect(gain);
-	gain.connect(ctx.destination);
-	noise.start(now);
-	noise.stop(now + 0.05);
+	// 第二层：触底声（按键落到底部的闷响）
+	const thud = ctx.createBufferSource();
+	thud.buffer = getNoiseBuffer(ctx);
+
+	const thudBPF = ctx.createBiquadFilter();
+	thudBPF.type = "bandpass";
+	thudBPF.frequency.value = 600 + Math.random() * 200;
+	thudBPF.Q.value = 0.8;
+
+	const thudGain = ctx.createGain();
+	thudGain.gain.setValueAtTime(0.1, now + 0.008);
+	thudGain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
+
+	thud.connect(thudBPF);
+	thudBPF.connect(thudGain);
+	thudGain.connect(ctx.destination);
+	thud.start(now + 0.008);
+	thud.stop(now + 0.04);
 }
 
 function playTypeReturn() {
