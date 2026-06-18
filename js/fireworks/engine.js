@@ -116,6 +116,57 @@ const blessingText =
 	"陪你走过每一个节日\n\n"
 	+ "端午快乐！";
 
+// 打字机音效：用 Web Audio API 生成短促的点击声
+function playTypeClick() {
+	if (!soundManager.ctx || soundManager.ctx.state !== "running") {
+		return;
+	}
+
+	const ctx = soundManager.ctx;
+	const now = ctx.currentTime;
+
+	// 短促高频点击
+	const osc = ctx.createOscillator();
+	const gain = ctx.createGain();
+
+	osc.type = "square";
+	osc.frequency.setValueAtTime(800 + Math.random() * 400, now);
+	osc.frequency.exponentialRampToValueAtTime(200, now + 0.03);
+
+	gain.gain.setValueAtTime(0.08, now);
+	gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+
+	osc.connect(gain);
+	gain.connect(ctx.destination);
+	osc.start(now);
+	osc.stop(now + 0.05);
+}
+
+// 换行音效：更重的回车声
+function playTypeReturn() {
+	if (!soundManager.ctx || soundManager.ctx.state !== "running") {
+		return;
+	}
+
+	const ctx = soundManager.ctx;
+	const now = ctx.currentTime;
+
+	const osc = ctx.createOscillator();
+	const gain = ctx.createGain();
+
+	osc.type = "triangle";
+	osc.frequency.setValueAtTime(300, now);
+	osc.frequency.exponentialRampToValueAtTime(100, now + 0.08);
+
+	gain.gain.setValueAtTime(0.12, now);
+	gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+
+	osc.connect(gain);
+	gain.connect(ctx.destination);
+	osc.start(now);
+	osc.stop(now + 0.1);
+}
+
 function startTypewriter(onComplete) {
 	const twPage = document.getElementById("typewriter");
 	const twText = document.getElementById("twText");
@@ -127,6 +178,7 @@ function startTypewriter(onComplete) {
 	const charDelay = 150;
 	const punctDelay = 400;
 	const punctuation = new Set(["，", "。", "！", "？", "、", "：", "；", "——"]);
+	const newline = new Set(["\n"]);
 
 	function typeNext() {
 		if (i >= blessingText.length) {
@@ -139,7 +191,14 @@ function startTypewriter(onComplete) {
 		twText.textContent += ch;
 		i++;
 
-		const delay = punctuation.has(ch) ? punctDelay : charDelay;
+		// 播放音效
+		if (newline.has(ch)) {
+			playTypeReturn();
+		} else if (ch.trim()) {
+			playTypeClick();
+		}
+
+		const delay = punctuation.has(ch) ? punctDelay : newline.has(ch) ? punctDelay : charDelay;
 		setTimeout(typeNext, delay);
 	}
 
