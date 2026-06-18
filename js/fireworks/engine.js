@@ -106,15 +106,15 @@ attachRuntimeBindings();
 
 // ====== 端午惊喜流程：封面 → 打字机 → 烟花 ======
 const blessingText =
-	"珂珂，端午安康 🎋\n\n" +
-	"今天包了粽子\n" +
-	"突然就很想你\n\n" +
-	"想和你一起\n" +
-	"看龙舟、吃粽子\n" +
-	"过很多很多个端午\n\n" +
-	"愿你一切都好\n" +
-	"健健康康，平平安安\n\n" +
-	"我会一直在的 ❤";
+	"端午安康，我的珂珂 🎋\n\n" +
+	"今天是端午节\n" +
+	"想认真地对你说：\n\n" +
+	"有你的每一天\n" +
+	"都很快乐安心\n\n" +
+	"愿你健健康康，岁岁平安\n" +
+	"我会一直在你身边\n" +
+	"陪你走过每一个节日\n\n"
+	+ "端午快乐！";
 
 function startTypewriter(onComplete) {
 	const twPage = document.getElementById("typewriter");
@@ -150,11 +150,14 @@ function launchSurprise() {
 	const cover = document.getElementById("cover");
 	const twPage = document.getElementById("typewriter");
 
+	// 立即注册用户交互（浏览器要求用户手势才能播放音频）
+	soundManager.registerInteraction();
+
 	// 封面淡出
 	cover.classList.add("fade-out");
 
-	// 后台预加载音频
-	const audioReady = soundManager.preload().catch(() => { });
+	// 后台预加载音频，完成后解码
+	const audioReady = soundManager.preload().then(() => soundManager.decodeReady()).catch(() => { });
 
 	// 封面淡出后启动打字机
 	setTimeout(() => {

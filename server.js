@@ -8,6 +8,7 @@ const MIME = {
 	".css": "text/css; charset=utf-8",
 	".js": "application/javascript; charset=utf-8",
 	".mp3": "audio/mpeg",
+	".dat": "audio/mpeg",
 	".png": "image/png",
 	".jpg": "image/jpeg",
 	".woff2": "font/woff2",

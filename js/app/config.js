@@ -4,7 +4,7 @@
 	const config = {
 		storageKey: "cm_fireworks_data",
 		storageVersion: "1.0",
-		defaultWords: Object.freeze(["端午安康", "岁岁平安", "百病不侵", "身体康健", "艾你一生", "平安喜乐", "__粽子__", "__龙舟__", "__艾叶__", "__香囊__"]),
+		defaultWords: Object.freeze(["端午安康", "岁岁平安", "诸事顺遂", "身体康健", "艾你一生", "平安喜乐", "__粽子__", "__龙舟__", "__艾叶__", "__香囊__"]),
 		defaultBackground: Object.freeze({
 			// `image` 使用图片地址。`style` 使用完整背景样式。
 			mode: "style",

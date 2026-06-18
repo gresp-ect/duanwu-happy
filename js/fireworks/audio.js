@@ -18,31 +18,31 @@ const soundManager = {
 			volume: 1,
 			playbackRateMin: 0.85,
 			playbackRateMax: 0.95,
-			fileNames: ["lift1.mp3", "lift2.mp3", "lift3.mp3"],
+			fileNames: ["lift1.dat", "lift2.dat", "lift3.dat"],
 		},
 		burst: {
 			volume: 1,
 			playbackRateMin: 0.8,
 			playbackRateMax: 0.9,
-			fileNames: ["burst1.mp3", "burst2.mp3"],
+			fileNames: ["burst1.dat", "burst2.dat"],
 		},
 		burstSmall: {
 			volume: 0.25,
 			playbackRateMin: 0.8,
 			playbackRateMax: 1,
-			fileNames: ["burst-sm-1.mp3", "burst-sm-2.mp3"],
+			fileNames: ["burst-sm-1.dat", "burst-sm-2.dat"],
 		},
 		crackle: {
 			volume: 0.2,
 			playbackRateMin: 1,
 			playbackRateMax: 1,
-			fileNames: ["crackle1.mp3"],
+			fileNames: ["crackle1.dat"],
 		},
 		crackleSmall: {
 			volume: 0.3,
 			playbackRateMin: 1,
 			playbackRateMax: 1,
-			fileNames: ["crackle-sm-1.mp3"],
+			fileNames: ["crackle-sm-1.dat"],
 		},
 	},
 	registerInteraction() {
@@ -82,11 +82,25 @@ const soundManager = {
 			this.ctx = new (window.AudioContext || window.webkitAudioContext)();
 		}
 
-		if (!this.decodePromise) {
+		return this.ctx;
+	},
+
+	// 在 rawBuffers 加载完成后调用，解码所有音频数据
+	decodeReady() {
+		if (!this.ctx) {
+			return Promise.resolve();
+		}
+
+		// 检查是否需要重新解码（rawBuffers 有数据但 buffers 为空）
+		const needsRedecode = Object.values(this.sources).some(
+			(s) => s.rawBuffers && s.rawBuffers.length > 0 && (!s.buffers || s.buffers.length === 0)
+		);
+
+		if (!this.decodePromise || needsRedecode) {
 			this.decodePromise = this.decodeBuffers();
 		}
 
-		return this.ctx;
+		return this.decodePromise;
 	},
 	preload() {
 		const requests = [];
@@ -176,7 +190,9 @@ const soundManager = {
 		}
 
 		this.ensureContext();
-		this.playSound("lift", 0);
+		this.decodeReady().then(() => {
+			this.playSound("lift", 0);
+		});
 		setTimeout(() => {
 			if (this.ctx) {
 				this.ctx.resume().catch(() => {});

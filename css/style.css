@@ -462,11 +462,8 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	background: #0d1b2a;
-	background-image:
-		radial-gradient(ellipse at 20% 80%, rgba(60, 120, 80, 0.15) 0%, transparent 50%),
-		radial-gradient(ellipse at 80% 20%, rgba(80, 60, 100, 0.12) 0%, transparent 50%),
-		radial-gradient(ellipse at 50% 100%, rgba(40, 80, 60, 0.1) 0%, transparent 40%);
+	background: #0a0a0a;
+	background-image: radial-gradient(ellipse at 50% 50%, rgba(30, 25, 20, 0.6) 0%, transparent 70%);
 	opacity: 1;
 	transition: opacity 0.8s ease-out;
 	overflow: hidden;
@@ -533,7 +530,7 @@ body {
 .cover-title {
 	font-family: "华文琥珀", "PingFang SC", sans-serif;
 	font-size: 3.2rem;
-	color: #e8d5b7;
+	color: #d4c4a0;
 	margin: 0 0 8px;
 	letter-spacing: 0.15em;
 	text-shadow: 0 1px 20px rgba(200, 180, 100, 0.15);
@@ -542,7 +539,7 @@ body {
 .cover-subtitle {
 	font-family: "华文琥珀", "PingFang SC", sans-serif;
 	font-size: 1.3rem;
-	color: #7da87d;
+	color: #d4c4a0;
 	margin: 0 0 20px;
 	letter-spacing: 0.2em;
 }
@@ -567,7 +564,7 @@ body {
 
 .cover-hint {
 	font-size: 0.95rem;
-	color: rgba(200, 190, 170, 0.5);
+	color: rgba(212, 196, 160, 0.45);
 	margin: 0 0 32px;
 	letter-spacing: 0.06em;
 }
@@ -575,7 +572,7 @@ body {
 .cover-btn {
 	font-family: "华文琥珀", "PingFang SC", sans-serif;
 	font-size: 1rem;
-	color: #e8d5b7;
+	color: #d4c4a0;
 	background: transparent;
 	border: 1px solid rgba(200, 180, 130, 0.3);
 	border-radius: 24px;
