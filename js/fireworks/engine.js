@@ -104,17 +104,87 @@ function attachRuntimeBindings() {
 applyStaticText();
 attachRuntimeBindings();
 
-if (IS_HEADER) {
-	init();
-} else {
-	setLoadingStatus("正在为你准备端午惊喜");
+// ====== 端午惊喜流程：封面 → 打字机 → 烟花 ======
+const blessingText =
+	"珂珂，端午安康 🎋\n\n" +
+	"今天包了粽子\n" +
+	"突然就很想你\n\n" +
+	"想和你一起\n" +
+	"看龙舟、吃粽子\n" +
+	"过很多很多个端午\n\n" +
+	"愿你一切都好\n" +
+	"健健康康，平平安安\n\n" +
+	"我会一直在的 ❤";
+
+function startTypewriter(onComplete) {
+	const twPage = document.getElementById("typewriter");
+	const twText = document.getElementById("twText");
+	const twCursor = document.getElementById("twCursor");
+
+	twPage.classList.add("active");
+
+	let i = 0;
+	const charDelay = 150;
+	const punctDelay = 400;
+	const punctuation = new Set(["，", "。", "！", "？", "、", "：", "；", "——"]);
+
+	function typeNext() {
+		if (i >= blessingText.length) {
+			twCursor.style.display = "none";
+			setTimeout(onComplete, 1500);
+			return;
+		}
+
+		const ch = blessingText[i];
+		twText.textContent += ch;
+		i++;
+
+		const delay = punctuation.has(ch) ? punctDelay : charDelay;
+		setTimeout(typeNext, delay);
+	}
+
+	typeNext();
+}
+
+function launchSurprise() {
+	const cover = document.getElementById("cover");
+	const twPage = document.getElementById("typewriter");
+
+	// 封面淡出
+	cover.classList.add("fade-out");
+
+	// 后台预加载音频
+	const audioReady = soundManager.preload().catch(() => { });
+
+	// 封面淡出后启动打字机
 	setTimeout(() => {
-		Promise.all([soundManager.preload()])
-			.then(() => {
+		cover.style.display = "none";
+
+		startTypewriter(() => {
+			// 打字完成 → 淡出打字机，启动烟花
+			twPage.classList.add("fade-out");
+
+			audioReady.finally(() => {
 				init();
-			})
-			.catch(() => {
-				init();
+				// 确保自动发射开启
+				if (!store.state.config.autoLaunch) {
+					updateConfig({ autoLaunch: true });
+				}
 			});
-	}, 0);
+
+			setTimeout(() => {
+				twPage.style.display = "none";
+			}, 800);
+		});
+	}, 800);
+}
+
+// 绑定封面按钮
+document.getElementById("startBtn").addEventListener("click", launchSurprise);
+
+if (IS_HEADER) {
+	// Header 模式直接启动，跳过封面
+	document.getElementById("cover").style.display = "none";
+	document.getElementById("typewriter").style.display = "none";
+	init();
 }

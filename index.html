@@ -16,6 +16,46 @@
 		<link rel="stylesheet" href="./css/style.css" />
 	</head>
 	<body>
+		<!-- 封面页 -->
+		<div id="cover" class="surprise-cover">
+			<div class="cover-leaves">
+				<svg class="leaf leaf-1" viewBox="0 0 80 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path d="M40 0 C60 30, 75 60, 40 120 C5 60, 20 30, 40 0Z" fill="rgba(80,140,80,0.25)"/>
+					<path d="M40 10 L40 110" stroke="rgba(80,140,80,0.15)" stroke-width="1.5"/>
+				</svg>
+				<svg class="leaf leaf-2" viewBox="0 0 80 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path d="M40 0 C60 30, 75 60, 40 120 C5 60, 20 30, 40 0Z" fill="rgba(80,140,80,0.2)"/>
+					<path d="M40 10 L40 110" stroke="rgba(80,140,80,0.12)" stroke-width="1.5"/>
+				</svg>
+				<svg class="leaf leaf-3" viewBox="0 0 80 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path d="M40 0 C60 30, 75 60, 40 120 C5 60, 20 30, 40 0Z" fill="rgba(80,140,80,0.18)"/>
+					<path d="M40 10 L40 110" stroke="rgba(80,140,80,0.1)" stroke-width="1.5"/>
+				</svg>
+			</div>
+			<div class="cover-content">
+				<div class="cover-zongzi">🫔</div>
+				<h1 class="cover-title">珂珂</h1>
+				<p class="cover-subtitle">端午安康</p>
+				<div class="cover-divider">
+					<span class="cover-divider-line"></span>
+					<span class="cover-divider-dot">◆</span>
+					<span class="cover-divider-line"></span>
+				</div>
+				<p class="cover-hint">有一份心意，想送给你</p>
+				<button id="startBtn" class="cover-btn">拆开看看</button>
+			</div>
+		</div>
+
+		<!-- 打字机页 -->
+		<div id="typewriter" class="surprise-typewriter">
+			<div class="tw-letter">
+				<div class="tw-letter-inner">
+					<div id="twText" class="tw-text"></div>
+					<span id="twCursor" class="tw-cursor">|</span>
+				</div>
+			</div>
+		</div>
+
 		<!-- partial:index.partial.html -->
 		<!-- SVG Spritesheet -->
 		<div style="height: 0; width: 0; position: absolute; visibility: hidden">

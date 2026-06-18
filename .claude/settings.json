@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node server.js)",
+      "mcp__plugin_playwright_playwright__browser_tabs",
+      "mcp__plugin_playwright_playwright__browser_click",
+      "mcp__plugin_playwright_playwright__browser_wait_for",
+      "Bash(git add *)",
+      "Bash(git commit -m 'feat: 端午惊喜三部曲 — 封面→打字机→烟花 *)",
+      "Bash(git push *)"
+    ]
+  }
+}
