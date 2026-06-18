@@ -1,0 +1,15 @@
+# Playwright MCP auto-generated
+.playwright-mcp/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node
+node_modules/
