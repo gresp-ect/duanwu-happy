@@ -99,13 +99,31 @@ const soundManager = {
 			throw new Error(response.statusText);
 		};
 
+		// file:// 协议下 fetch 会被 CORS 拦截，使用 XHR 兼容
+		const loadBuffer = (url) => {
+			if (window.location.protocol === "file:") {
+				return new Promise((resolve, reject) => {
+					const xhr = new XMLHttpRequest();
+					xhr.open("GET", url, true);
+					xhr.responseType = "arraybuffer";
+					xhr.onload = () => {
+						if (xhr.status === 200 || xhr.status === 0) {
+							resolve(xhr.response);
+						} else {
+							reject(new Error(`加载失败: ${url}`));
+						}
+					};
+					xhr.onerror = () => reject(new Error(`加载失败: ${url}`));
+					xhr.send();
+				});
+			}
+
+			return fetch(url).then(ensureSuccessfulResponse).then((response) => response.arrayBuffer());
+		};
+
 		Object.keys(this.sources).forEach((type) => {
 			const source = this.sources[type];
-			const sourceRequests = source.fileNames.map((fileName) =>
-				fetch(this.baseURL + fileName)
-					.then(ensureSuccessfulResponse)
-					.then((response) => response.arrayBuffer())
-			);
+			const sourceRequests = source.fileNames.map((fileName) => loadBuffer(this.baseURL + fileName));
 
 			Promise.all(sourceRequests).then((buffers) => {
 				source.rawBuffers = buffers;
