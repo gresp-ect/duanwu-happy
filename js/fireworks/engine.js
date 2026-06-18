@@ -116,7 +116,25 @@ const blessingText =
 	"陪你走过每一个节日\n\n"
 	+ "端午快乐！";
 
-// 打字机音效：用 Web Audio API 生成短促的点击声
+// 打字机音效：白噪音 + 滤波器，模拟真实机械按键声
+function createNoiseBuffer(ctx) {
+	const bufferSize = ctx.sampleRate * 0.05; // 50ms
+	const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+	const data = buffer.getChannelData(0);
+	for (let i = 0; i < bufferSize; i++) {
+		data[i] = Math.random() * 2 - 1;
+	}
+	return buffer;
+}
+
+let _noiseBuffer = null;
+function getNoiseBuffer(ctx) {
+	if (!_noiseBuffer) {
+		_noiseBuffer = createNoiseBuffer(ctx);
+	}
+	return _noiseBuffer;
+}
+
 function playTypeClick() {
 	if (!soundManager.ctx || soundManager.ctx.state !== "running") {
 		return;
@@ -125,24 +143,34 @@ function playTypeClick() {
 	const ctx = soundManager.ctx;
 	const now = ctx.currentTime;
 
-	// 短促高频点击
-	const osc = ctx.createOscillator();
+	// 白噪音源
+	const noise = ctx.createBufferSource();
+	noise.buffer = getNoiseBuffer(ctx);
+
+	// 带通滤波 → 敲击质感
+	const bandpass = ctx.createBiquadFilter();
+	bandpass.type = "bandpass";
+	bandpass.frequency.value = 2500 + Math.random() * 1500;
+	bandpass.Q.value = 1.5;
+
+	// 高通滤波 → 去掉低频闷声
+	const highpass = ctx.createBiquadFilter();
+	highpass.type = "highpass";
+	highpass.frequency.value = 800;
+
+	// 包络
 	const gain = ctx.createGain();
+	gain.gain.setValueAtTime(0.15, now);
+	gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
 
-	osc.type = "square";
-	osc.frequency.setValueAtTime(800 + Math.random() * 400, now);
-	osc.frequency.exponentialRampToValueAtTime(200, now + 0.03);
-
-	gain.gain.setValueAtTime(0.08, now);
-	gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-
-	osc.connect(gain);
+	noise.connect(bandpass);
+	bandpass.connect(highpass);
+	highpass.connect(gain);
 	gain.connect(ctx.destination);
-	osc.start(now);
-	osc.stop(now + 0.05);
+	noise.start(now);
+	noise.stop(now + 0.05);
 }
 
-// 换行音效：更重的回车声
 function playTypeReturn() {
 	if (!soundManager.ctx || soundManager.ctx.state !== "running") {
 		return;
@@ -151,20 +179,38 @@ function playTypeReturn() {
 	const ctx = soundManager.ctx;
 	const now = ctx.currentTime;
 
-	const osc = ctx.createOscillator();
+	// 更重的机械声
+	const noise = ctx.createBufferSource();
+	noise.buffer = getNoiseBuffer(ctx);
+
+	const bandpass = ctx.createBiquadFilter();
+	bandpass.type = "bandpass";
+	bandpass.frequency.value = 1200;
+	bandpass.Q.value = 0.8;
+
 	const gain = ctx.createGain();
+	gain.gain.setValueAtTime(0.2, now);
+	gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
 
-	osc.type = "triangle";
-	osc.frequency.setValueAtTime(300, now);
-	osc.frequency.exponentialRampToValueAtTime(100, now + 0.08);
-
-	gain.gain.setValueAtTime(0.12, now);
-	gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-
-	osc.connect(gain);
+	noise.connect(bandpass);
+	bandpass.connect(gain);
 	gain.connect(ctx.destination);
-	osc.start(now);
-	osc.stop(now + 0.1);
+	noise.start(now);
+	noise.stop(now + 0.15);
+
+	// 叮一声（行尾铃声）
+	setTimeout(() => {
+		const osc = ctx.createOscillator();
+		const bellGain = ctx.createGain();
+		osc.type = "sine";
+		osc.frequency.value = 2200;
+		bellGain.gain.setValueAtTime(0.06, ctx.currentTime);
+		bellGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+		osc.connect(bellGain);
+		bellGain.connect(ctx.destination);
+		osc.start(ctx.currentTime);
+		osc.stop(ctx.currentTime + 0.3);
+	}, 60);
 }
 
 function startTypewriter(onComplete) {
