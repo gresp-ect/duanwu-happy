@@ -1,6 +1,9 @@
 # Playwright MCP auto-generated
 .playwright-mcp/
 
+# Claude Code
+.claude/
+
 # OS files
 .DS_Store
 Thumbs.db
@@ -13,6 +16,9 @@ Thumbs.db
 
 # Node
 node_modules/
+
+# Netlify
+.netlify/
 
 # Local Netlify folder
 .netlify
